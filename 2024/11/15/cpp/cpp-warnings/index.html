@@ -6,15 +6,15 @@
   
   <title>CPP Warnings | hnsk0808</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="记录一些C++的警告，来优化自己的代码风格 1. 类的 成员名 不应该和 成员函数的形参&#x2F;局部变量 重复2. 传递给 C接口 的C++函数应该加上 noexcept3. #include 后的路径尽量不要加”..&#x2F;“返回上级目录">
+  <meta name="description" content="记录一些C++的警告，来优化自己的代码风格 1. 类的成员名不应该和成员函数的形参&#x2F;局部变量重复2. 传递给C语言接口的C++函数应该加上noexcept3. #include后的路径尽量不要加&quot;..&#x2F;&quot;返回上级目录">
 <meta property="og:type" content="article">
 <meta property="og:title" content="CPP Warnings">
 <meta property="og:url" content="https://hnsk0808.github.io/2024/11/15/cpp/cpp-warnings/index.html">
 <meta property="og:site_name" content="hnsk0808">
-<meta property="og:description" content="记录一些C++的警告，来优化自己的代码风格 1. 类的 成员名 不应该和 成员函数的形参&#x2F;局部变量 重复2. 传递给 C接口 的C++函数应该加上 noexcept3. #include 后的路径尽量不要加”..&#x2F;“返回上级目录">
-<meta property="og:locale">
+<meta property="og:description" content="记录一些C++的警告，来优化自己的代码风格 1. 类的成员名不应该和成员函数的形参&#x2F;局部变量重复2. 传递给C语言接口的C++函数应该加上noexcept3. #include后的路径尽量不要加&quot;..&#x2F;&quot;返回上级目录">
+<meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2024-11-15T08:54:54.000Z">
-<meta property="article:modified_time" content="2024-11-15T13:37:27.900Z">
+<meta property="article:modified_time" content="2024-11-16T08:38:15.724Z">
 <meta property="article:author" content="hnsk0808">
 <meta property="article:tag" content="CPP">
 <meta name="twitter:card" content="summary">
@@ -60,12 +60,12 @@
       <nav id="sub-nav">
         
         
-          <a class="nav-icon" href="/atom.xml" title="RSS Feed"><span class="fa fa-rss"></span></a>
+          <a class="nav-icon" href="/atom.xml" title="RSS 订阅"><span class="fa fa-rss"></span></a>
         
-        <a class="nav-icon nav-search-btn" title="Suche"><span class="fa fa-search"></span></a>
+        <a class="nav-icon nav-search-btn" title="搜索"><span class="fa fa-search"></span></a>
       </nav>
       <div id="search-form-wrap">
-        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Suche"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://hnsk0808.github.io"></form>
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="搜索"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://hnsk0808.github.io"></form>
       </div>
     </div>
   </div>
@@ -95,11 +95,11 @@
     <div class="e-content article-entry" itemprop="articleBody">
       
         <p>记录一些C++的警告，来优化自己的代码风格</p>
-<h3 id="1-类的-成员名-不应该和-成员函数的形参-局部变量-重复"><a href="#1-类的-成员名-不应该和-成员函数的形参-局部变量-重复" class="headerlink" title="1. 类的 成员名 不应该和 成员函数的形参&#x2F;局部变量 重复"></a>1. 类的 成员名 不应该和 成员函数的形参&#x2F;局部变量 重复</h3><h3 id="2-传递给-C接口-的C-函数应该加上-noexcept"><a href="#2-传递给-C接口-的C-函数应该加上-noexcept" class="headerlink" title="2. 传递给 C接口 的C++函数应该加上 noexcept"></a>2. 传递给 C接口 的C++函数应该加上 noexcept</h3><h3 id="3-include-后的路径尽量不要加”-“返回上级目录"><a href="#3-include-后的路径尽量不要加”-“返回上级目录" class="headerlink" title="3. #include 后的路径尽量不要加”..&#x2F;“返回上级目录"></a>3. #include 后的路径尽量不要加”..&#x2F;“返回上级目录</h3>
+<h3 id="1-类的成员名不应该和成员函数的形参-局部变量重复"><a href="#1-类的成员名不应该和成员函数的形参-局部变量重复" class="headerlink" title="1. 类的成员名不应该和成员函数的形参/局部变量重复"></a>1. 类的<code>成员名</code>不应该和<code>成员函数的形参/局部变量</code>重复</h3><h3 id="2-传递给C语言接口的C-函数应该加上noexcept"><a href="#2-传递给C语言接口的C-函数应该加上noexcept" class="headerlink" title="2. 传递给C语言接口的C++函数应该加上noexcept"></a>2. 传递给<code>C语言接口</code>的C++函数应该加上<code>noexcept</code></h3><h3 id="3-include后的路径尽量不要加-返回上级目录"><a href="#3-include后的路径尽量不要加-返回上级目录" class="headerlink" title="3. #include后的路径尽量不要加&quot;../&quot;返回上级目录"></a>3. <code>#include</code>后的路径尽量不要加<code>&quot;../&quot;</code>返回上级目录</h3>
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://hnsk0808.github.io/2024/11/15/cpp/cpp-warnings/" data-id="cm3jwduzr0000v07612e622px" data-title="CPP Warnings" class="article-share-link"><span class="fa fa-share">Teilen</span></a>
+      <a data-url="https://hnsk0808.github.io/2024/11/15/cpp/cpp-warnings/" data-id="cm3k1l4u40000mc7665zvgqgt" data-title="CPP Warnings" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
@@ -112,7 +112,7 @@
 <nav id="article-nav">
   
     <a href="/2024/11/15/tools/hexo/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Neuer</strong>
+      <strong class="article-nav-caption">前一篇</strong>
       <div class="article-nav-title">
         
           hexo
@@ -122,7 +122,7 @@
   
   
     <a href="/2024/11/13/tools/cmake/" id="article-nav-older" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Älter</strong>
+      <strong class="article-nav-caption">后一篇</strong>
       <div class="article-nav-title">cmake</div>
     </a>
   
@@ -141,7 +141,7 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Tags</h3>
+    <h3 class="widget-title">标签</h3>
     <div class="widget">
       <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/CPP/" rel="tag">CPP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/" rel="tag">hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B0%8F%E5%B7%A5%E5%85%B7/" rel="tag">小工具</a></li></ul>
     </div>
@@ -151,7 +151,7 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Tag Cloud</h3>
+    <h3 class="widget-title">标签云</h3>
     <div class="widget tagcloud">
       <a href="/tags/CPP/" style="font-size: 10px;">CPP</a> <a href="/tags/hexo/" style="font-size: 15px;">hexo</a> <a href="/tags/%E5%B0%8F%E5%B7%A5%E5%85%B7/" style="font-size: 20px;">小工具</a>
     </div>
@@ -160,9 +160,9 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Archiv</h3>
+    <h3 class="widget-title">归档</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/11/">November 2024</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/11/">十一月 2024</a></li></ul>
     </div>
   </div>
 
@@ -170,7 +170,7 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">letzter Beitrag</h3>
+    <h3 class="widget-title">最新文章</h3>
     <div class="widget">
       <ul>
         
