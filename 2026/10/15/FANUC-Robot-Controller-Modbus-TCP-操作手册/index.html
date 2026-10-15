@@ -1,0 +1,650 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>FANUC Robot Controller Modbus TCP 操作手册 | 橘四穿的博客</title><meta name="author" content="橘四穿"><meta name="copyright" content="橘四穿"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="FANUC Robot Controller Modbus TCP 操作手册简介Modbus TCP 接口可通过以太网网络，与其他支持 Modbus TCP 的设备进行 I&#x2F;O 数据交互。机器人上的 Modbus TCP 选件仅作为服务端（从站 slave），因此只能和客户端（主站 master）设备交换 I&#x2F;O 信号。Modbus TCP 基于 TCP&#x2F;IP 协议，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="FANUC Robot Controller Modbus TCP 操作手册">
+<meta property="og:url" content="https://hnsk0808.github.io/2026/10/15/FANUC-Robot-Controller-Modbus-TCP-%E6%93%8D%E4%BD%9C%E6%89%8B%E5%86%8C/index.html">
+<meta property="og:site_name" content="橘四穿的博客">
+<meta property="og:description" content="FANUC Robot Controller Modbus TCP 操作手册简介Modbus TCP 接口可通过以太网网络，与其他支持 Modbus TCP 的设备进行 I&#x2F;O 数据交互。机器人上的 Modbus TCP 选件仅作为服务端（从站 slave），因此只能和客户端（主站 master）设备交换 I&#x2F;O 信号。Modbus TCP 基于 TCP&#x2F;IP 协议，">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://hnsk0808.github.io/img/avatar.png">
+<meta property="article:published_time" content="2026-10-15T04:21:49.000Z">
+<meta property="article:modified_time" content="2026-10-15T04:27:09.465Z">
+<meta property="article:author" content="橘四穿">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://hnsk0808.github.io/img/avatar.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "FANUC Robot Controller Modbus TCP 操作手册",
+  "url": "https://hnsk0808.github.io/2026/10/15/FANUC-Robot-Controller-Modbus-TCP-%E6%93%8D%E4%BD%9C%E6%89%8B%E5%86%8C/",
+  "image": "https://hnsk0808.github.io/img/avatar.png",
+  "datePublished": "2026-10-15T04:21:49.000Z",
+  "dateModified": "2026-10-15T04:27:09.465Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "橘四穿",
+      "url": "https://hnsk0808.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://hnsk0808.github.io/2026/10/15/FANUC-Robot-Controller-Modbus-TCP-%E6%93%8D%E4%BD%9C%E6%89%8B%E5%86%8C/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.7.1.260810"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.3.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.14/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        try {
+          const data = { value }
+
+          if (ttl != null) {
+            data.expiry = Date.now() + ttl * 86400000
+          }
+
+          localStorage.setItem(key, JSON.stringify(data))
+        } catch (e) {
+          console.error(e)
+        }
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return
+
+        try {
+          const data = JSON.parse(itemStr)
+
+          if (data.expiry && Date.now() > data.expiry) {
+            localStorage.removeItem(key)
+            return
+          }
+
+          return data.value
+        } catch {
+          localStorage.removeItem(key)
+        }
+      }
+    }
+
+    const scriptCache = new Map()
+    const cssCache = new Map()
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => {
+        if (scriptCache.has(url)) {
+          return scriptCache.get(url)
+        }
+
+        const promise = new Promise((resolve, reject) => {
+          const script = document.createElement('script')
+
+          script.src = url
+          script.async = true
+
+          for (const key in attr) {
+            script.setAttribute(key, attr[key])
+          }
+
+          script.onload = resolve
+          script.onerror = reject
+
+          document.head.appendChild(script)
+        })
+
+        scriptCache.set(url, promise)
+
+        return promise
+      },
+      getCSS: (url, id) => {
+        if (cssCache.has(url)) {
+          return cssCache.get(url)
+        }
+
+        const promise = new Promise((resolve, reject) => {
+          const link = document.createElement('link')
+
+          link.rel = 'stylesheet'
+          link.href = url
+
+          if (id) {
+            link.id = id
+          }
+
+          link.onload = resolve
+          link.onerror = reject
+
+          document.head.appendChild(link)
+        })
+
+        cssCache.set(url, promise)
+
+        return promise
+      },
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const metaThemeColor = document.querySelector('meta[name="theme-color"]')
+      const activateDarkMode = () => {
+        document.documentElement.dataset.theme = 'dark'
+        if (metaThemeColor !== null) {
+          metaThemeColor.setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.dataset.theme = 'light'
+        if (metaThemeColor !== null) {
+          metaThemeColor.setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'FANUC Robot Controller Modbus TCP 操作手册',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 8.1.2"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/top_img.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">橘四穿的博客</span></a><a class="nav-page-title" href="/"><span class="site-name">FANUC Robot Controller Modbus TCP 操作手册</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">FANUC Robot Controller Modbus TCP 操作手册</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-10-15T04:21:49.000Z" title="发表于 2026-10-15 12:21:49">2026-10-15</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-10-15T04:27:09.465Z" title="更新于 2026-10-15 12:27:09">2026-10-15</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="FANUC-Robot-Controller-Modbus-TCP-操作手册"><a href="#FANUC-Robot-Controller-Modbus-TCP-操作手册" class="headerlink" title="FANUC Robot Controller Modbus TCP 操作手册"></a>FANUC Robot Controller Modbus TCP 操作手册</h1><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>Modbus TCP 接口可通过以太网网络，与其他支持 Modbus TCP 的设备进行 I&#x2F;O 数据交互。<br>机器人上的 Modbus TCP 选件<strong>仅作为服务端（从站 slave）</strong>，因此只能和客户端（主站 master）设备交换 I&#x2F;O 信号。<br>Modbus TCP 基于 TCP&#x2F;IP 协议，采用客户端 - 服务端模型。Modbus TCP 可配置为交换机器人所支持的全部 I&#x2F;O 信号。Modbus TCP 规范由 Modbus-IDA 组织维护。</p>
+<p>以太网属于非确定性网络，Modbus TCP 不保证时序。<br>若在设定的时限内没有收到 I&#x2F;O 交互报文，机器人 Modbus TCP 服务端将会超时并上报故障（除非关闭超时功能）。<br>良好的网络规划与拓扑结构，对于实现两台设备间高速、可靠的 Modbus TCP 通信至关重要。</p>
+<h2 id="系统概述"><a href="#系统概述" class="headerlink" title="系统概述"></a>系统概述</h2><h3 id="Modbus-概述"><a href="#Modbus-概述" class="headerlink" title="Modbus 概述"></a>Modbus 概述</h3><p>机器人 Modbus TCP 服务器最多支持<strong>4 路并发 Modbus TCP 连接</strong>。这些连接分为两类连接池：<strong>优先连接池</strong>与<strong>非优先连接池</strong>。默认情况下，所有连接均为非优先连接。</p>
+<p>可通过指定 Modbus TCP 客户端 IP 地址，将最多 2 条连接设置为优先连接。也就是说：<strong>只有配置了对应 IP 地址的设备，才能作为 Modbus TCP 客户端，通过优先连接接入机器人；其他客户端设备无法使用优先连接</strong>。</p>
+<p>任意 Modbus TCP 客户端设备都可以接入非优先连接，除非机器人中将非优先连接池的大小设为 0。<br>若所有可用的非优先连接已被占用，此时又有新的 Modbus TCP 客户端尝试接入非优先连接池，则<strong>最早建立的那条非优先连接会被断开，新的连接请求将被受理</strong>。</p>
+<p>Modbus TCP 接口在机器人 I&#x2F;O 映射中对应：<strong>96 号机架，1 号槽位</strong>。<br>可通过 Modbus TCP 映射任意数量 I&#x2F;O，上限为机器人支持的最大 I&#x2F;O 点数。</p>
+<p>良好的网络规划是保证通信可靠的关键。必须避免或妥善处理过量网络流量与网络冲突。</p>
+<h3 id="I-O表"><a href="#I-O表" class="headerlink" title="I&#x2F;O表"></a>I&#x2F;O表</h3><h4 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h4><p>Modbus 的数据模型基于一系列数据表：</p>
+<p><strong>表2.1 Modbus数据模型</strong></p>
+<table>
+<thead>
+<tr>
+<th>数据表</th>
+<th>对象类型</th>
+<th>读写属性</th>
+<th>机器人映射</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>离散输入（Discrete inputs）</td>
+<td>单个位</td>
+<td>只读</td>
+<td>数字输出（DO）</td>
+</tr>
+<tr>
+<td>线圈（Coils）</td>
+<td>单个位</td>
+<td>读写</td>
+<td>数字输入（DI）</td>
+</tr>
+<tr>
+<td>输入寄存器（Input Registers）</td>
+<td>16位字</td>
+<td>只读</td>
+<td>数字输出（DO）</td>
+</tr>
+<tr>
+<td>保持寄存器（Holding Registers）</td>
+<td>16位字</td>
+<td>读写*</td>
+<td>数字输入（DI）与数字输出（DO）</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p><em>备注：虽然机器人数字输出（DO）可以通过Modbus保持寄存器访问，但机器人数字输出*<em>仍然为只读</em></em>。如果尝试将数据写入映射为保持寄存器的机器人数字输出，Modbus会返回<strong>非法地址</strong>错误码。</p>
+</blockquote>
+<p>Modbus离散输入表、输入寄存器表进行了地址复用，映射至机器人的数字输出（DO）。<br>同理，线圈表、保持寄存器表地址复用，映射至机器人数字输入（DI）。</p>
+<p>表2.2可快速查阅Modbus地址到机器人I&#x2F;O地址的映射关系。</p>
+<hr>
+<blockquote>
+<p>注意<br>本文档所有示例中，<code>DO [1]</code>指机器人Modbus 96号机架、1号槽位分配的<strong>第1路数字输出点</strong>。<br>同理，<code>DI [1]</code>指机器人Modbus 96号机架、1号槽位分配的<strong>第1路数字输入点</strong>。</p>
+</blockquote>
+<blockquote>
+<p>注意<br>机器人返回的所有寄存器数据均为<strong>大端</strong>格式。</p>
+</blockquote>
+<p><strong>表2.2 Modbus 到机器人地址映射（速查表）</strong></p>
+<table>
+<thead>
+<tr>
+<th>Modbus地址</th>
+<th>机器人I&#x2F;O</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>离散输入 0</td>
+<td>数字输出：DO[1]</td>
+</tr>
+<tr>
+<td>离散输入 1</td>
+<td>数字输出：DO[2]</td>
+</tr>
+<tr>
+<td>离散输入 2</td>
+<td>数字输出：DO[3]</td>
+</tr>
+<tr>
+<td>…</td>
+<td>…</td>
+</tr>
+<tr>
+<td>线圈 0</td>
+<td>数字输入：DI[1]</td>
+</tr>
+<tr>
+<td>线圈 1</td>
+<td>数字输入：DI[2]</td>
+</tr>
+<tr>
+<td>线圈 2</td>
+<td>数字输入：DI[3]</td>
+</tr>
+<tr>
+<td>…</td>
+<td>…</td>
+</tr>
+<tr>
+<td>输入寄存器 0</td>
+<td>数字输出（DO[1] — DO[16]）</td>
+</tr>
+<tr>
+<td>输入寄存器 1</td>
+<td>数字输出（DO[17] — DO[32]）</td>
+</tr>
+<tr>
+<td>输入寄存器 2</td>
+<td>数字输出（DO[33] — DO[48]）</td>
+</tr>
+<tr>
+<td>…</td>
+<td>…</td>
+</tr>
+<tr>
+<td>保持寄存器 0</td>
+<td>数字输入（DI[1] — DI[16]）</td>
+</tr>
+<tr>
+<td>保持寄存器 1</td>
+<td>数字输入（DI[17] — DI[32]）</td>
+</tr>
+<tr>
+<td>保持寄存器 2</td>
+<td>数字输入（DI[33] — DI[48]）</td>
+</tr>
+<tr>
+<td>…</td>
+<td>…</td>
+</tr>
+<tr>
+<td>保持寄存器 10000（只读）</td>
+<td>数字输出（DO[1] — DO[16]）</td>
+</tr>
+<tr>
+<td>保持寄存器 10001（只读）</td>
+<td>数字输出（DO[17] — DO[32]）</td>
+</tr>
+<tr>
+<td>保持寄存器 10002（只读）</td>
+<td>数字输出（DO[33] — DO[48]）</td>
+</tr>
+<tr>
+<td>…</td>
+<td>…</td>
+</tr>
+</tbody></table>
+<h4 id="离散输入与输入寄存器"><a href="#离散输入与输入寄存器" class="headerlink" title="离散输入与输入寄存器"></a>离散输入与输入寄存器</h4><p>离散输入从<strong>地址0</strong>开始访问。例如：指令“读取离散输入4”，会访问机器人第5路数字输出点（DO[5]），如图2.1中斜纹区域所示。</p>
+<p>输入寄存器同样从<strong>地址0</strong>开始访问。例如：指令“读取输入寄存器2”，会以寄存器形式访问第3组共16个数字输出点（DO[33]~DO[48]），如图2.1中横纹区域所示。</p>
+<blockquote>
+<p>注意：读取Modbus寄存器时，机器人返回数据为<strong>大端格式</strong>；输出点位编号顺序：<strong>从最低位（右侧）到最高位（左侧）</strong>，见图2.1。</p>
+</blockquote>
+<p>这两张数据表地址相互重叠，意味着：</p>
+<p>读取离散输入0~15，等效于读取输入寄存器0；</p>
+<p>此外，读取离散输入16~31，等效于读取输入寄存器1，以此类推。</p>
+<p><img src="/img/FANUC-Robot-Controller-Modbus-TCP-%E6%93%8D%E4%BD%9C%E6%89%8B%E5%86%8C/Fig.2.1.png" alt="Fig.2.1"></p>
+<p>在图 2.1 中，斜纹标记的输出点代表<strong>读取离散输入 4</strong>这条请求所返回的输出点位。<br>数据映射表里的横纹区域，代表<strong>读取输入寄存器 2</strong>这条请求会返回的、包含 16 个点位的寄存器。</p>
+<h4 id="线圈与保持寄存器"><a href="#线圈与保持寄存器" class="headerlink" title="线圈与保持寄存器"></a>线圈与保持寄存器</h4><p>线圈从<strong>地址 0</strong>开始访问。例如，指令 “写线圈 4” 会访问机器人第 5 路数字输入点，如图 2.2 斜纹区域所示。</p>
+<p>保持寄存器同样从<strong>地址 0</strong>开始访问。例如，指令 “写寄存器 2” 会访问第 3 组共 16 路数字输入点（DI [33]~DI [48]），如图 2.2 横纹区域所示。<br>写入保持寄存器时，线圈以<strong>大端格式</strong>写入；输入点位编号顺序：<strong>从最低位（右侧）到最高位（左侧）</strong>，见图 2.2。</p>
+<p>这两张数据表地址相互重叠，意味着：<br>写入线圈 0<del>15，等效于写入保持寄存器 0；<br>此外，写入线圈 16</del>31，等效于写入保持寄存器 1，以此类推。</p>
+<p><img src="/img/FANUC-Robot-Controller-Modbus-TCP-%E6%93%8D%E4%BD%9C%E6%89%8B%E5%86%8C/Fig.2.2.png" alt="Fig.2.2"></p>
+<p>在图 2.2 中，斜纹标记的输入点代表<strong>写线圈 4</strong>请求所写入的输入点位。<br>数据映射表的横纹区域代表<strong>写寄存器 2</strong>请求将要写入的、包含 16 个点位的寄存器。</p>
+<p>机器人数字输出（DO）也可以通过<strong>只读的 Modbus 保持寄存器</strong>访问，起始地址为 10000。<br>例如，指令 “读取寄存器 10002” 会访问第 3 组共 16 路数字输出点（DO [33]~DO [48]），如图 2.2 横纹区域所示。</p>
+<p>读取保持寄存器时，数据采用大端格式；输出点位编号顺序：<strong>从最低位（右侧）到最高位（左侧）</strong>，见图 2.3。</p>
+<p><img src="/img/FANUC-Robot-Controller-Modbus-TCP-%E6%93%8D%E4%BD%9C%E6%89%8B%E5%86%8C/Fig.2.3.png" alt="Fig.2.3"></p>
+<p>在图 2.3 中，数据映射表里的横纹区域代表<strong>读取输入寄存器 2</strong>请求所返回的、包含 16 个点位的寄存器。</p>
+<p>通过保持寄存器同时访问机器人数字输入与数字输出，可以使用 Modbus 功能码 23：<strong>读写寄存器（ReadWrite Registers）</strong>。Modbus 客户端可通过<strong>单条 Modbus 请求</strong>，同时读取和写入机器人数字 I&#x2F;O 信号。</p>
+<h4 id="0-基地址与-1-基地址"><a href="#0-基地址与-1-基地址" class="headerlink" title="0 基地址与 1 基地址"></a>0 基地址与 1 基地址</h4><p>Modbus 地址为<strong>0 基（从零开始编号）</strong>，而机器人本体 I&#x2F;O 地址为<strong>1 基（从 1 开始编号）</strong>。这点容易让部分用户混淆。<br>例如：访问机器人数字输入 1（DI [1]）时，Modbus 客户端应配置访问<strong>线圈 0</strong>。</p>
+<p>不过机器人 Modbus 软件也支持在 Modbus 协议层启用 1 基地址模式。<br>当系统变量 <code>$MODBUSTCP.$BASEZERO</code> 设置为 <code>FALSE</code> 时，强制启用 1 基地址。此时 Modbus 客户端需要向<strong>线圈 1</strong>写入，才能控制机器人 DI [1]；若向线圈 0 写入，会触发 Modbus**非法地址（Illegal Address）**报错。</p>
+<p>本文档中所有示例，均默认使用<strong>0 基地址</strong>。</p>
+<h3 id="支持的Modbus功能码"><a href="#支持的Modbus功能码" class="headerlink" title="支持的Modbus功能码"></a>支持的Modbus功能码</h3><p>机器人Modbus TCP服务端支持下表所列Modbus功能。</p>
+<p><strong>表2.3 Modbus功能列表</strong></p>
+<table>
+<thead>
+<tr>
+<th>十进制码</th>
+<th>十六进制码</th>
+<th>功能名称</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>01</td>
+<td>0x01</td>
+<td>Read Coils 读线圈</td>
+</tr>
+<tr>
+<td>02</td>
+<td>0x02</td>
+<td>Read Discrete Inputs 读离散输入</td>
+</tr>
+<tr>
+<td>03</td>
+<td>0x03</td>
+<td>Read Holding Registers 读保持寄存器</td>
+</tr>
+<tr>
+<td>04</td>
+<td>0x04</td>
+<td>Read Input Registers 读输入寄存器</td>
+</tr>
+<tr>
+<td>05</td>
+<td>0x05</td>
+<td>Write Single Coil 写单个线圈</td>
+</tr>
+<tr>
+<td>06</td>
+<td>0x06</td>
+<td>Write Single Register 写单个寄存器</td>
+</tr>
+<tr>
+<td>16</td>
+<td>0x10</td>
+<td>Write Multiple Registers 写多个寄存器</td>
+</tr>
+<tr>
+<td>23</td>
+<td>0x17</td>
+<td>Read&#x2F;Write Multiple Registers 读写多个寄存器</td>
+</tr>
+</tbody></table>
+<p><strong>简要说明</strong></p>
+<ul>
+<li>01(0x01)：读线圈 → 读取&#x2F;控制DI信号</li>
+<li>02(0x02)：读离散输入 → 读取DO信号</li>
+<li>03(0x03)：读保持寄存器，可读取DI状态，也可读10000起始段的DO</li>
+<li>04(0x04)：读输入寄存器</li>
+<li>05(0x05)：写单个线圈，单点控制DI</li>
+<li>06(0x06)：写单个保持寄存器，一次性写16个DI</li>
+<li>16(0x10)：批量写保持寄存器</li>
+<li>23(0x17)：一次报文同时完成寄存器读+写，适合一边读DO、一边下发DI控制信号</li>
+</ul>
+<h3 id="以太网连接与IP地址分配"><a href="#以太网连接与IP地址分配" class="headerlink" title="以太网连接与IP地址分配"></a>以太网连接与IP地址分配</h3><p>机器人要作为Modbus TCP节点工作，必须配置有效的IP地址与子网掩码。以太网接口和TCP&#x2F;IP配置的详细说明，请参阅《Internet Options Setup and Operations Manual（互联网选件设置与操作手册）》。</p>
+<p>以太网接口支持10Mbps、100Mbps速率，支持半双工与全双工通信。默认情况下，两个网口都会自动协商，建议连接到支持100Mbps全双工的交换机。<strong>如果只在一端（机器人或交换机）开启自动协商，另一端不开启，很容易出现双工模式不匹配，会引发严重通信故障。</strong></p>
+<p>主CPU板RJ45接头旁的LED指示灯，可用来确认链路是否建立。LED的详细说明，请参阅手册附录“Diagnostic Information（诊断信息）”。</p>
+<p>IP地址可通过以下两种方式配置：</p>
+<ul>
+<li>在机器人示教器上手动配置 — 参考《互联网选件设置与操作手册》中“Setting Up TCP&#x2F;IP（TCP&#x2F;IP设置）”章节</li>
+<li>DHCP（动态主机配置协议） — 参考手册“Dynamic Host Configuration Protocol（动态主机配置协议）”章节</li>
+</ul>
+<blockquote>
+<p><strong>注意</strong><br>DHCP属于可选软件组件。使用Modbus TCP时，<strong>强烈建议使用静态IP或者永久租期IP地址</strong>。</p>
+</blockquote>
+<p>可以配置其中一个以太网端口，也可两个端口同时启用Modbus TCP。注意：如果要同时使用两个网口，必须将它们配置在<strong>不同子网</strong>。详细参考手册“Setting Up TCP&#x2F;IP（TCP&#x2F;IP设置）”章节。</p>
+<blockquote>
+<p><strong>注意</strong><br>在执行本手册中的各项功能前，请确保所有Modbus TCP节点的IP地址配置正确。可使用PING工具验证基础连通性，更多信息见6.3节。</p>
+</blockquote>
+<h2 id="Modbus-TCP-服务端配置"><a href="#Modbus-TCP-服务端配置" class="headerlink" title="Modbus TCP 服务端配置"></a>Modbus TCP 服务端配置</h2><h3 id="概述-1"><a href="#概述-1" class="headerlink" title="概述"></a>概述</h3><p>机器人最多支持<strong>4 路 Modbus TCP 连接</strong>。这类连接通常对接单元控制器或 PLC，用于交换工作站接口 I&#x2F;O 数据。必须加载 Modbus TCP 选件，才能启用该功能。</p>
+<h3 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h3><p>Modbus TCP界面分为两个区域：<strong>状态区（Status）</strong> 和<strong>配置区（configuration）</strong>。<br>状态区仅包含一项：<strong>从站状态（Slave Status）</strong>，该字段为只读。<br>配置区包含6个用户可配置字段。对配置字段做的任何修改，<strong>必须重启电源才能生效</strong>。表3.1描述了Modbus TCP界面的所有项目。请按照流程3-1来配置Modbus TCP从站。</p>
+<p><strong>表3.1 Modbus界面项目</strong></p>
+<table>
+<thead>
+<tr>
+<th>字段名称</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Slave Status（从站状态）</td>
+<td>从站状态字段显示为 RUNNING（运行中）或 IDLE（空闲）。   RUNNING：正在与Modbus TCP主站进行I&#x2F;O数据交互；   IDLE：当前无I&#x2F;O数据交互。</td>
+</tr>
+<tr>
+<td>Number of Connections（连接数量）</td>
+<td>连接数量字段用于指定从站可同时建立的Modbus TCP连接数。取值范围0～最大4路；设为0可完全关闭机器人Modbus从站功能。   按照Modbus TCP协议规范：当新连接请求到来、且无空闲连接资源时，系统会关闭最旧的连接，再接受新连接。上电后首次发生此场景，会触发PRIO-494警告报警。</td>
+</tr>
+<tr>
+<td>Timeout（超时时间）</td>
+<td>超时字段定义空闲Modbus TCP连接的超时时间（单位：毫秒）。   若在该超时时间内没有收到来自主站的报文，从站会判定网络连接丢失&#x2F;断开，关闭全部连接并上报超时报警。此字段设为0可关闭超时检测。</td>
+</tr>
+<tr>
+<td>Error Severity（错误等级）</td>
+<td>错误等级字段定义Modbus TCP报警的严重级别。可通过F4【CHOICE】按键设置为 STOP（停机）、WARN（警告）或 PAUSE（暂停）。</td>
+</tr>
+<tr>
+<td>Keep Input on Timeout（超时保持输入）</td>
+<td>超时保持输入字段用于定义发生超时时输入信号的处理方式。   设为FALSE：超时发生后，所有Modbus输入置0；   其余情况：输入保持超时前的状态不变。</td>
+</tr>
+<tr>
+<td>Input Words（输入字数量）</td>
+<td>输入字字段用于分配数字输入的容量。此处1个字 &#x3D; 16位。例如配置4个字，则分配64点数字输入，分配至机架96，插槽1。所有连接到机器人Modbus从站的主站，均可读写该数字输入数据。</td>
+</tr>
+<tr>
+<td>Output Words（输出字数量）</td>
+<td>输出字字段用于分配数字输出的容量。此处1个字 &#x3D; 16位。例如配置4个字，则分配64点数字输出，分配至机架96，插槽1。所有连接到机器人Modbus从站的主站，均可读取该数字输出数据。</td>
+</tr>
+</tbody></table>
+<p><strong>流程3.1 配置Modbus TCP从站</strong></p>
+<ol>
+<li>按下【MENUS】菜单键。</li>
+<li>选择【I&#x2F;O】。</li>
+<li>按下F1【TYPE】，然后选择Modbus TCP，界面将显示类似下方的画面。</li>
+</ol>
+<p><img src="/img/FANUC-Robot-Controller-Modbus-TCP-%E6%93%8D%E4%BD%9C%E6%89%8B%E5%86%8C/%E6%B5%81%E7%A8%8B3.1.png" alt="流程3.1"></p>
+<ol start="4">
+<li>依次选中下面各项，按需求进行参数设置（参考表3.1）</li>
+</ol>
+<ul>
+<li>Number of Connections（连接数量）</li>
+<li>Timeout（超时时间）</li>
+<li>Error Severity（错误等级）</li>
+<li>Keep Input on Timeout（超时保持输入）</li>
+<li>Input Words（输入字数量）</li>
+<li>Output Words（输出字数量）</li>
+</ul>
+<ol start="5">
+<li>关闭控制器电源，然后重新上电。</li>
+</ol>
+<h3 id="优先连接"><a href="#优先连接" class="headerlink" title="优先连接"></a>优先连接</h3><p>Modbus TCP服务端支持<strong>优先连接</strong>。最多可以指定2条连接作为优先连接，配置方式是填写Modbus TCP客户端的IP地址。<br>这表示：除了该IP对应的设备之外，其他Modbus TCP客户端设备无法占用这条优先连接。并且机器人Modbus TCP服务端<strong>不会主动关闭优先连接</strong>，除非客户端主动断开连接，或者发生超时。</p>
+<p>任意Modbus TCP客户端设备都可以接入<strong>非优先连接</strong>（未标记为优先的连接）。当所有可用非优先连接全部被占用，又有新客户端尝试接入非优先连接池时，系统会关闭现存最早建立的非优先连接，接受新连接请求。上电后首次出现该场景时，会触发PRIO-494警告报警。</p>
+<p>默认情况下，所有连接均为非优先连接。<br>可通过设置下面一个或两个系统变量（填写合法IP地址或主机名）来配置优先连接：</p>
+<ul>
+<li><code>$MODBUSTCP.$PRIO1</code></li>
+<li><code>$MODBUSTCP.$PRIO2</code></li>
+</ul>
+<p>举例：假设有一台PLC IP：192.168.1.11，一台HMI设备IP：192.168.1.22。<br>我们希望PLC的连接作为优先连接，HMI使用非优先连接。<br>需要将“Number of Connections（连接数量）”设置为2；<br>同时设置 <code>$MODBUSTCP.$PRIO1 = &quot;192.168.1.11&quot;</code>；<br>最后根据PLC或HMI中较快的扫描周期，合理设置“Timeout（超时时间）”参数。</p>
+<p>在上面这个例子中，一共配置了2条Modbus TCP连接，其中一条设置为PLC的优先连接。由于仅配置了1条优先连接，第二条连接默认为非优先连接，可供任意Modbus TCP客户端（包括HMI设备）使用。</p>
+<h2 id="I-O-配置"><a href="#I-O-配置" class="headerlink" title="I&#x2F;O 配置"></a>I&#x2F;O 配置</h2><h3 id="概述-2"><a href="#概述-2" class="headerlink" title="概述"></a>概述</h3><p>本章介绍如何将Modbus TCP I&#x2F;O映射到机器人内部的数字信号与组信号，从而在机器人程序内使用Modbus TCP I&#x2F;O信号。同时也介绍Modbus TCP及I&#x2F;O配置的备份与恢复操作流程。</p>
+<h3 id="在机器人上映射I-O"><a href="#在机器人上映射I-O" class="headerlink" title="在机器人上映射I&#x2F;O"></a>在机器人上映射I&#x2F;O</h3><p>Modbus TCP I&#x2F;O可以映射到数字I&#x2F;O或组I&#x2F;O。原理和机器人上其他I&#x2F;O点映射类似：机架（rack）、槽位（slot）、起始点编号用于把物理I&#x2F;O映射为I&#x2F;O映射表里的逻辑I&#x2F;O。Modbus TCP I&#x2F;O固定使用<strong>机架96，槽位1</strong>。<br>使用流程411在机器人上完成I&#x2F;O映射。</p>
+<p><strong>流程4.1 在机器人上映射I&#x2F;O</strong></p>
+<ol>
+<li>按下【MENUS】菜单键</li>
+<li>选择【I&#x2F;O】</li>
+<li>按F1【TYPE】，选择Digital（数字信号）或Group（组信号）</li>
+<li>按F2【CONFIG】</li>
+<li>将Range（范围）设置为合适的值</li>
+<li>机架设为96，槽号设为1，并按需求设置起始点</li>
+</ol>
+<blockquote>
+<p><strong>备注</strong><br>如需更多I&#x2F;O配置相关信息，请查阅对应应用的《设置与操作手册》中输入&#x2F;输出(I&#x2F;O)设置章节。</p>
+</blockquote>
+<p>在部分应用软件中，控制器上电时会自动完成I&#x2F;O配置。系统变量 <code>$IO_AUTO_CFG</code> 用于控制数字I&#x2F;O的自动配置行为。</p>
+<h3 id="Modbus-TCP的备份与恢复"><a href="#Modbus-TCP的备份与恢复" class="headerlink" title="Modbus TCP的备份与恢复"></a>Modbus TCP的备份与恢复</h3><p>有两个文件保存Modbus TCP与I&#x2F;O映射配置信息：</p>
+<ul>
+<li><strong>DIOCFGSV.IO</strong>：保存通用I&#x2F;O配置以及全部I&#x2F;O映射（例如Modbus TCP和数字信号、组信号之间的映射关系）</li>
+<li><strong>SYSMBUS.SV</strong>：保存Modbus TCP专属配置</li>
+</ul>
+<p>可使用流程4-3手动备份这两个文件。<br>流程4-4用于完整应用程序备份，会同时包含DIOCFGSV.IO和SYSMBUS.SV。</p>
+<p><strong>流程4-3 手动备份文件</strong></p>
+<ol>
+<li>选择文件保存的默认存储设备<br> a. 按下【MENUS】<br> b. 选择【File】文件<br> c. 按F5【UTIL】，选择【SET DEVICE】设置设备<br> d. 选中你想要保存文件的设备</li>
+<li>保存 DIOCFGSV.IO<br> a. 按下【MENUS】<br> b. 选择【I&#x2F;O】<br> c. 按F1【TYPE】，选择DIGITAL数字信号<br> d. 按FCTN功能键<br> e. 选择Save保存，将DIOCFGSV.IO保存至默认设备</li>
+<li>保存 SYSMBUS.SV<br> a. 按下【MENUS】<br> b. 选择【I&#x2F;O】<br> c. 按F1【TYPE】，选择Modbus TCP<br> d. 按FCTN功能键<br> e. 选择Save保存，将SYSMBUS.SV保存至默认设备</li>
+</ol>
+<p><strong>流程4-4 执行完整应用备份</strong></p>
+<ol>
+<li>选择文件保存的默认存储设备<br> a. 按下【MENUS】<br> b. 选择【File】文件<br> c. 按F5【UTIL】，选择【SET DEVICE】设置设备<br> d. 选中你想要保存文件的设备</li>
+<li>按F4【BACKUP】备份，选择“All of above”全部内容</li>
+</ol>
+<h2 id="Modbus-TCP-规范指南"><a href="#Modbus-TCP-规范指南" class="headerlink" title="Modbus TCP 规范指南"></a>Modbus TCP 规范指南</h2><p>良好的网络设计对可靠运行至关重要。需要特别留意布线规范，以及会影响线缆系统和设备的环境条件；同时要管控网络流量，避免带宽与设备资源浪费。</p>
+<p>布线与环境注意事项：</p>
+<ul>
+<li>使用<strong>5类及以上双绞线</strong>，满足100‑BaseTX以太网标准，适配应用场景与现场环境；根据工况选择屏蔽或非屏蔽双绞线。</li>
+<li>严格遵守布线规范，例如交换机到设备的线缆最大长度（100米）。</li>
+<li>线缆弯曲半径不可超过该线缆规格推荐限值。</li>
+<li>使用适配现场环境的连接器。除普通开放式RJ45外，适用场景应选用工业以太网接头，例如具备IP65、IP67防护等级的连接器。</li>
+<li>线缆布线远离电气、磁场干扰源；若必须交叉，采用90°正交走线，降低以太网线路上的感应噪声。</li>
+</ul>
+<p>网络流量管理要点：</p>
+<ul>
+<li>限制冲突域，控制或消除网络冲突。</li>
+<li>限制广播域，管控广播流量。</li>
+<li>通过智能路由管控组播流量。</li>
+<li>高负载严苛应用场景下，采用QoS（服务质量）技术。</li>
+</ul>
+<p>冲突是传统以太网的常见问题，使用交换机（而非集线器）搭配全双工连接可彻底避免冲突。以太网I&#x2F;O网络必须使用交换机+全双工连接，可将冲突域缩小至单台设备，从而杜绝冲突。</p>
+<p>机器人接口默认自动协商，协商出最优连接速率，一般为100Mbps、全双工。可手动指定机器人的连接速率与双工模式（参考《互联网选项设置与操作手册》中“TCP&#x2F;IP设置”章节）。</p>
+<p>⚠️ 注意：通信两端<strong>速率、双工模式必须保持一致</strong>，或者两端都开启自动协商。如果仅单侧开启自动协商，极易发生双工模式不匹配，引发严重故障。</p>
+<p>机器人RJ45接头旁的LED灯用于确认链路连接状态（LED详情请查阅《互联网选项设置与操作手册》附录“诊断信息”）。也可以按照流程5-1，在TCP&#x2F;IP主机通信状态画面查看链路状态。</p>
+<p><strong>流程5-1 校验链路状态</strong></p>
+<ol>
+<li>按下【MENUS】菜单</li>
+<li>选择【Setup】设置</li>
+<li>按F1【TYPE】，选择【Host Comm】主机通信</li>
+<li>选择【TCP&#x2F;IP】</li>
+<li>按F3【PORT】切换到对应网口（1号口或2号口）</li>
+<li>按【NEXT】，再按F2【STATUS】查看状态</li>
+</ol>
+<p>广播流量：子网内所有节点都要接收广播报文，部分场景下还需要应答。过量广播流量会占用大量网络带宽，消耗所有节点设备资源。<br><strong>广播域</strong>：必须接收全部广播报文的设备范围（一般为整个子网）。<br>发那科机器人推荐：使用独立子网或者高端交换机支持的VLAN（虚拟局域网），把广播域限制在控制设备范围内（如Modbus TCP节点）。</p>
+<blockquote>
+<p>如果Modbus TCP网络作为独立网络完全隔离，则不用考虑该问题；但当它接入更大的网络时，该点就非常关键。</p>
+</blockquote>
+<p>QoS提供流量优先级调度机制。普通以太网默认所有数据包优先级均等；网络拥塞时，数据包会随机丢弃或延迟。QoS就是多种报文优先级处理技术的统称，包含：</p>
+<ul>
+<li>MAC层（二层）优先级（IEEE 802.1p）</li>
+<li>IP层（三层）优先级，基于源&#x2F;目的IP地址</li>
+<li>传输层（四层）优先级，基于源&#x2F;目的端口</li>
+</ul>
+<p>这类QoS功能一般在网络基础设施设备（交换机）内实现，超出本手册的介绍范围。<br>对于对I&#x2F;O通信确定性要求极高的复杂控制网络，建议启用QoS，同时需要满足：</p>
+<ul>
+<li>100Mbps通信速率</li>
+<li>全双工连接</li>
+<li>端口自动协商</li>
+<li>适配工况的环境指标（温度等）</li>
+<li>电源要求与冗余设计（例如支持24Vdc或120Vac，可配置第二路冗余电源）</li>
+</ul>
+<blockquote>
+<p><strong>备注1</strong><br>如果网络中存在大量组播流量，交换机需要支持 <strong>IGMP Snooping（IGMP侦听，组播感知）</strong>。</p>
+</blockquote>
+<blockquote>
+<p><strong>备注2</strong><br>如果该控制网络需要接入更大的网络，控制网络应当部署在独立VLAN或者独立子网内。可以在控制交换机上配置实现，也可以根据主网与控制交换机之间的接入方式来规划。</p>
+</blockquote>
+<p><strong>交换机产品示例</strong></p>
+<ul>
+<li>RJLinx ENHSAURR8：8口非网管型工业交换机</li>
+<li>Telesyn AT-FS716：16口非网管型交换机</li>
+<li>Cisco 2950-12：12口网管型交换机</li>
+<li>Cisco 2955（2950的工业版）</li>
+<li>Hirschmann MICE：模块化工业交换机</li>
+<li>Phoenix Contact：网管&#x2F;非网管型工业交换机</li>
+<li>Interlink-BT SE-84x-E524：5口网管&#x2F;非网管型工业交换机</li>
+</ul>
+<h2 id="诊断与故障排查"><a href="#诊断与故障排查" class="headerlink" title="诊断与故障排查"></a>诊断与故障排查</h2><h3 id="概述-3"><a href="#概述-3" class="headerlink" title="概述"></a>概述</h3><p>校验网络连接有两种基础工具：</p>
+<ul>
+<li>以太网状态指示灯</li>
+<li>PING工具</li>
+</ul>
+<p>指示灯与PING工具属于基础检测手段，但可以有效判断设备能否在网络中通信。<br>如果<strong>LINK指示灯熄灭，或者PING请求超时</strong>，代表该设备的所有网络功能都无法正常工作。<br>更多以太网状态指示灯的内容见6.2节；PING工具相关内容见6.3节。</p>
+<h3 id="以太网状态指示灯"><a href="#以太网状态指示灯" class="headerlink" title="以太网状态指示灯"></a>以太网状态指示灯</h3><p>机器人RJ45网口上的以太网状态指示灯用于显示机器人的物理链路连接状态。绝大多数以太网交换机与其他设备也配有同类指示灯，用来指示物理层连接。</p>
+<p>如果 <strong>LINK指示灯熄灭</strong>：代表以太网物理连接完全断开，通常原因是网线松动、断线或者接头接触不良。<br>机器人和交换机两端的<strong>速率、双工模式必须保持匹配</strong>。</p>
+<p>以太网指示灯详细说明请查阅《互联网选项设置与操作手册》附录“诊断信息”。<br>自动协商、手动设置速率与双工模式的详细内容，参考该手册“TCP&#x2F;IP配置”章节。</p>
+<p>机器人默认开启自动协商，<strong>绝大多数场景下不要修改此默认配置</strong>。</p>
+<h3 id="PING工具"><a href="#PING工具" class="headerlink" title="PING工具"></a>PING工具</h3><p>PING是一款网络工具：向指定IP地址发送探测请求，等待对方应答。这个请求本质就是询问：<strong>你能否收到我的报文？</strong><br>目标设备收到请求后会回复应答包；发起端收到应答代表连通正常，无应答则判定超时。</p>
+<p>PING是基础网络工具，Linux、Unix、Windows等多数操作系统自带，FANUC机器人系统也内置该工具。<br>就算设备自身不能主动发起PING（例如不带操作界面的Modbus TCP模块），也可以响应PING探测包。<br>机器人本体可使用PING去测试任意主机名或IP地址（步骤见流程6-1）；Windows电脑同样可以使用PING（步骤见流程6-2）。</p>
+<p><strong>流程6-1 在机器人上使用PING</strong></p>
+<ol>
+<li>按下 MENU（菜单）</li>
+<li>选择 Setup（设置）</li>
+<li>按F1，【TYPE】类型</li>
+<li>选择 Host Comm（主机通信）</li>
+<li>在协议列表中移动光标选中 PING，按下 ENTER</li>
+<li>输入需要PING测试的节点名称或IP地址</li>
+<li>按F2，PING执行测试</li>
+</ol>
+<blockquote>
+<p><strong>备注</strong>：示教器提示行会显示PING成功，或是请求超时。</p>
+</blockquote>
+<p><strong>流程6-2 在Windows电脑上使用PING</strong></p>
+<ol>
+<li>打开DOS命令提示符（CMD）</li>
+<li>输入命令，替换成目标IP地址，回车执行</li>
+</ol>
+<p>示例：<code>PING 192.168.0.10</code></p>
+<p>下文附图展示PING连通成功的示例画面。</p>
+<p><img src="/img/FANUC-Robot-Controller-Modbus-TCP-%E6%93%8D%E4%BD%9C%E6%89%8B%E5%86%8C/Fig.6.1.png" alt="Fig.6.1"></p>
+<p>下图展示一次 PING 测试成功的画面。</p>
+<p><img src="/img/FANUC-Robot-Controller-Modbus-TCP-%E6%93%8D%E4%BD%9C%E6%89%8B%E5%86%8C/Fig.6.2.png" alt="Fig.6.2"></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://hnsk0808.github.io">橘四穿</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://hnsk0808.github.io/2026/10/15/FANUC-Robot-Controller-Modbus-TCP-%E6%93%8D%E4%BD%9C%E6%89%8B%E5%86%8C/">https://hnsk0808.github.io/2026/10/15/FANUC-Robot-Controller-Modbus-TCP-%E6%93%8D%E4%BD%9C%E6%89%8B%E5%86%8C/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://hnsk0808.github.io" target="_blank">橘四穿的博客</a>！</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/img/avatar.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2026/10/14/Fanuc%E6%9C%BA%E5%99%A8%E4%BA%BA%E7%AC%94%E8%AE%B0/" title="Fanuc机器人笔记"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">Fanuc机器人笔记</div></div><div class="info-2"><div class="info-item-1">Fanuc机器人笔记参考B站视频：  https://www.bilibili.com/video/BV1Y44y1n7NF https://www.bilibili.com/video/BV1T341157KM  机器人型号选择Fanuc LR Mate 200iD Roboguide 扩展 添加码垛扩展：机器人选项添加J500 添加ModbusTCP扩展：机器人选项添加R581和R800  主站，从站概念从站可以看作服务器 主站可以看作客户端 示教器设置主机通信 进入页面Menu -&gt; 6 设置 -&gt; 0 下页 -&gt; 5 通信 如果没有看到TCP/IP协议，选择F4 显示 -&gt; 1 协议，有显示跳过这一步 选择TCP/IP，点击F3 详细 配置端口#1 IP地址 配置主机，添加PLC名称和PLC的IP地址 选中PLC的IP地址后，选择F4 PING测试连接是否成功   示教器设置Modbus TCP 参数机器人只能作为 Modbus TCP从站，最多被 4 个主站访问 默认端口号：502  进入页面Menu -&gt; 5 IO -&gt; 1 单元接...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">橘四穿</div><div class="author-info-description">个人分享博客</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">3</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">1</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/hnsk0808"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/hnsk0808" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="tencent://message/?uin=3807080334" target="_blank" title="QQ 3807080334"><i class="fab fa-qq" style="color: #1296db;"></i></a><a class="social-icon" href="https://space.bilibili.com/1053836801" target="_blank" title="Bilibili"><i class="fab fa-bilibili" style="color: #00a1d6;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#FANUC-Robot-Controller-Modbus-TCP-%E6%93%8D%E4%BD%9C%E6%89%8B%E5%86%8C"><span class="toc-number">1.</span> <span class="toc-text">FANUC Robot Controller Modbus TCP 操作手册</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AE%80%E4%BB%8B"><span class="toc-number">1.1.</span> <span class="toc-text">简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B3%BB%E7%BB%9F%E6%A6%82%E8%BF%B0"><span class="toc-number">1.2.</span> <span class="toc-text">系统概述</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Modbus-%E6%A6%82%E8%BF%B0"><span class="toc-number">1.2.1.</span> <span class="toc-text">Modbus 概述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#I-O%E8%A1%A8"><span class="toc-number">1.2.2.</span> <span class="toc-text">I&#x2F;O表</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%A6%82%E8%BF%B0"><span class="toc-number">1.2.2.1.</span> <span class="toc-text">概述</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%A6%BB%E6%95%A3%E8%BE%93%E5%85%A5%E4%B8%8E%E8%BE%93%E5%85%A5%E5%AF%84%E5%AD%98%E5%99%A8"><span class="toc-number">1.2.2.2.</span> <span class="toc-text">离散输入与输入寄存器</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%BA%BF%E5%9C%88%E4%B8%8E%E4%BF%9D%E6%8C%81%E5%AF%84%E5%AD%98%E5%99%A8"><span class="toc-number">1.2.2.3.</span> <span class="toc-text">线圈与保持寄存器</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#0-%E5%9F%BA%E5%9C%B0%E5%9D%80%E4%B8%8E-1-%E5%9F%BA%E5%9C%B0%E5%9D%80"><span class="toc-number">1.2.2.4.</span> <span class="toc-text">0 基地址与 1 基地址</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%94%AF%E6%8C%81%E7%9A%84Modbus%E5%8A%9F%E8%83%BD%E7%A0%81"><span class="toc-number">1.2.3.</span> <span class="toc-text">支持的Modbus功能码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%A5%E5%A4%AA%E7%BD%91%E8%BF%9E%E6%8E%A5%E4%B8%8EIP%E5%9C%B0%E5%9D%80%E5%88%86%E9%85%8D"><span class="toc-number">1.2.4.</span> <span class="toc-text">以太网连接与IP地址分配</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Modbus-TCP-%E6%9C%8D%E5%8A%A1%E7%AB%AF%E9%85%8D%E7%BD%AE"><span class="toc-number">1.3.</span> <span class="toc-text">Modbus TCP 服务端配置</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A6%82%E8%BF%B0-1"><span class="toc-number">1.3.1.</span> <span class="toc-text">概述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE"><span class="toc-number">1.3.2.</span> <span class="toc-text">配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BC%98%E5%85%88%E8%BF%9E%E6%8E%A5"><span class="toc-number">1.3.3.</span> <span class="toc-text">优先连接</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#I-O-%E9%85%8D%E7%BD%AE"><span class="toc-number">1.4.</span> <span class="toc-text">I&#x2F;O 配置</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A6%82%E8%BF%B0-2"><span class="toc-number">1.4.1.</span> <span class="toc-text">概述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%A8%E6%9C%BA%E5%99%A8%E4%BA%BA%E4%B8%8A%E6%98%A0%E5%B0%84I-O"><span class="toc-number">1.4.2.</span> <span class="toc-text">在机器人上映射I&#x2F;O</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Modbus-TCP%E7%9A%84%E5%A4%87%E4%BB%BD%E4%B8%8E%E6%81%A2%E5%A4%8D"><span class="toc-number">1.4.3.</span> <span class="toc-text">Modbus TCP的备份与恢复</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Modbus-TCP-%E8%A7%84%E8%8C%83%E6%8C%87%E5%8D%97"><span class="toc-number">1.5.</span> <span class="toc-text">Modbus TCP 规范指南</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%8A%E6%96%AD%E4%B8%8E%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5"><span class="toc-number">1.6.</span> <span class="toc-text">诊断与故障排查</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A6%82%E8%BF%B0-3"><span class="toc-number">1.6.1.</span> <span class="toc-text">概述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%A5%E5%A4%AA%E7%BD%91%E7%8A%B6%E6%80%81%E6%8C%87%E7%A4%BA%E7%81%AF"><span class="toc-number">1.6.2.</span> <span class="toc-text">以太网状态指示灯</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#PING%E5%B7%A5%E5%85%B7"><span class="toc-number">1.6.3.</span> <span class="toc-text">PING工具</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/10/15/FANUC-Robot-Controller-Modbus-TCP-%E6%93%8D%E4%BD%9C%E6%89%8B%E5%86%8C/" title="FANUC Robot Controller Modbus TCP 操作手册">FANUC Robot Controller Modbus TCP 操作手册</a><time datetime="2026-10-15T04:21:49.000Z" title="发表于 2026-10-15 12:21:49">2026-10-15</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/10/14/Fanuc%E6%9C%BA%E5%99%A8%E4%BA%BA%E7%AC%94%E8%AE%B0/" title="Fanuc机器人笔记">Fanuc机器人笔记</a><time datetime="2026-10-14T14:02:34.000Z" title="发表于 2026-10-14 22:02:34">2026-10-14</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/10/14/hello-world/" title="Hello World">Hello World</a><time datetime="2026-10-14T13:00:00.000Z" title="发表于 2026-10-14 21:00:00">2026-10-14</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By 橘四穿</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.2</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.7.1.260810</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.7.1.260810"></script><script src="/js/main.js?v=5.7.1.260810"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.14/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
